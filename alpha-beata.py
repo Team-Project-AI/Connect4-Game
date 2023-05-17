@@ -6,8 +6,8 @@ import math
 
 BLUE = (26, 26, 255)
 WHITE = (244, 240, 224)
-RED = (255, 26, 26)
-YELLOW = (255, 255, 26)
+RED = (213, 46, 48)
+YELLOW = (252, 238, 33)
 
 NRows = 6
 NColumns = 7
@@ -28,14 +28,11 @@ def createBoard():
     board = np.zeros((NRows, NColumns))
     return board
 
-
 def dropPiece(board, row, col, piece):
     board[row][col] = piece
 
-
 def isValidLocation(board, col):
     return board[NRows - 1][col] == 0
-
 
 def getChildren(board, col):
     for row in range(NRows):
@@ -97,20 +94,20 @@ def calcScore(window, piece):
 def state(board, piece):
     score = 0
     # Score center column
-    centerArr = [int(i) for i in list(board[:, Limit])]
+    centerArr = [i for i in list(board[:, Limit])]
     centerCount = centerArr.count(piece)
     score += centerCount * 3
 
     # Score Horizontal
     for row in range(NRows):
-        rowArr = [int(i) for i in list(board[row, :])]
+        rowArr = [i for i in list(board[row, :])]
         for col in range(NColumns - Limit):
             window = rowArr[col:col + Connect]
             score += calcScore(window, piece)
 
     # Score Vertical
     for col in range(NColumns):
-        colArr = [int(i) for i in list(board[:, col])]
+        colArr = [i for i in list(board[:, col])]
         for row in range(NRows - Limit):
             window = colArr[row:row + Connect]
             score += calcScore(window, piece)
@@ -131,7 +128,10 @@ def state(board, piece):
 
 
 def isTerminalNode(board):
-    return len(getValidLocations(board)) == 0 or winning(board, CPiece) or winning(board, APiece)
+    if len(getValidLocations(board)) == 0 or winning(board, CPiece) or winning(board, APiece):
+        return True
+    return False
+
 
 def alpha_beta(board, depth, alpha, beta, maximizingPlayer):
     isTerminal = isTerminalNode(board)
@@ -142,9 +142,9 @@ def alpha_beta(board, depth, alpha, beta, maximizingPlayer):
                 return (Max, None)
             elif winning(board, CPiece):
                 return (Min, None)
-            else:  # Game is over, no more valid moves
+            else:  # Game is over(no more valid moves)
                 return (0, None)
-        else:  # Depth is zero
+        else:  # depth is zero
             return (state(board, APiece), None)
     if maximizingPlayer:
         value = -math.inf
@@ -178,7 +178,6 @@ def alpha_beta(board, depth, alpha, beta, maximizingPlayer):
                 break
         return value, column
 
-
 def getValidLocations(board):
     valid_locations = []
     for col in range(NColumns):
@@ -204,7 +203,7 @@ def bestMove(board, piece):
 def drawBoard(board):
     for col in range(NColumns):
         for row in range(NRows):
-            pygame.draw.rect(screen, BLUE, (col * BoardSize, row * BoardSize + BoardSize, BoardSize, BoardSize))
+            pygame.draw.rect(screen, YELLOW, (col * BoardSize, row * BoardSize + BoardSize, BoardSize, BoardSize))
             pygame.draw.circle(screen, WHITE, (
                 int(col * BoardSize + BoardSize / 2), int(row * BoardSize + BoardSize + BoardSize / 2)), Radius)
 
@@ -214,7 +213,7 @@ def drawBoard(board):
                 pygame.draw.circle(screen, RED, (
                     int(col * BoardSize + BoardSize / 2), height - int(row * BoardSize + BoardSize / 2)), Radius)
             elif board[row][col] == APiece:
-                pygame.draw.circle(screen, YELLOW, (
+                pygame.draw.circle(screen, BLUE, (
                     int(col * BoardSize + BoardSize / 2), height - int(row * BoardSize + BoardSize / 2)), Radius)
     pygame.display.update()
 
@@ -247,8 +246,7 @@ while not game_over:
     # computer turn
     if turn == Computer:
         # col = random.randint(0, NColumns - 1)
-        # Score, col = minimax(board, 5, True)
-        Score, col = alpha_beta(board, 5, -math.inf, math.inf, False)
+        Score, col = alpha_beta(board, 4, -math.inf, math.inf, False)
 
         if isValidLocation(board, col):
             pygame.time.wait(420)
@@ -276,7 +274,7 @@ while not game_over:
             dropPiece(board, row, col, APiece)
 
             if winning(board, APiece):
-                label = Font.render("Agent wins", 2, YELLOW)
+                label = Font.render("Agent wins", 2, BLUE)
                 print("Agent wins")
                 screen.blit(label, (40, 10))
                 game_over = True
