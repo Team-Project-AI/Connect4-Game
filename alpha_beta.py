@@ -8,6 +8,8 @@ BLUE = (26, 26, 255)
 WHITE = (244, 240, 224)
 RED = (213, 46, 48)
 YELLOW = (252, 238, 33)
+BLACK = (0,0,0)
+LIGHT_BLUE = (0, 0, 179)
 
 NRows = 6
 NColumns = 7
@@ -24,6 +26,7 @@ Connect = 4
 Max = 100000000000000
 Min = -100000000000000
 
+level_depths = {"Easy": 3, "Medium": 5, "Hard": 6}
 def createBoard():
     board = np.zeros((NRows, NColumns))
     return board
@@ -185,25 +188,101 @@ def getValidLocations(board):
             valid_locations.append(col)
     return valid_locations
 
-
 def drawBoard(board):
-    # screen.fill(WHITE)
     for col in range(NColumns):
         for row in range(NRows):
-            pygame.draw.rect(screen, YELLOW, (col * BoardSize, row * BoardSize + BoardSize, BoardSize, BoardSize))
+            pygame.draw.rect(screen, YELLOW, (LeftMargin + col * BoardSize, TopMargin + row * BoardSize + BoardSize, BoardSize, BoardSize))
             pygame.draw.circle(screen, WHITE, (
-                int(col * BoardSize + BoardSize / 2), int(row * BoardSize + BoardSize + BoardSize / 2)), Radius)
+                int(LeftMargin + col * BoardSize + BoardSize / 2), int(TopMargin + row * BoardSize + BoardSize + BoardSize / 2)), Radius)
 
     for col in range(NColumns):
         for row in range(NRows):
             if board[row][col] == CPiece:
                 pygame.draw.circle(screen, RED, (
-                    int(col * BoardSize + BoardSize / 2), height - int(row * BoardSize + BoardSize / 2)), Radius)
+                    int(LeftMargin + col * BoardSize + BoardSize / 2), Height - int(TopMargin + row * BoardSize + BoardSize / 2)), Radius)
             elif board[row][col] == APiece:
                 pygame.draw.circle(screen, BLUE, (
-                    int(col * BoardSize + BoardSize / 2), height - int(row * BoardSize + BoardSize / 2)), Radius)
+                    int(LeftMargin + col * BoardSize + BoardSize / 2), Height - int(TopMargin + row * BoardSize + BoardSize / 2)), Radius)
     pygame.display.update()
 
+def displayMenu():
+    global choice, d
+    menuFont = pygame.font.SysFont("Open Sans", 50)
+    title = menuFont.render("Connect Four Game", 1, BLUE)
+    screen.blit(title, (Width / 2 - title.get_width() / 2, 50))
+
+    # Define button dimensions
+    buttonWidth = 200
+    buttonHeight = 50
+
+    # Create Easy button
+    easyButtonRect = pygame.Rect((Width - buttonWidth) / 2, 200, buttonWidth, buttonHeight)
+    easyButtonColor = BLUE
+    pygame.draw.rect(screen, easyButtonColor, easyButtonRect)
+    easy = menuFont.render("Easy", 1, WHITE)
+    screen.blit(easy, (easyButtonRect.centerx - easy.get_width() / 2, easyButtonRect.centery - easy.get_height() / 2))
+
+    # Create Medium button
+    mediumButtonRect = pygame.Rect((Width - buttonWidth) / 2, 300, buttonWidth, buttonHeight)
+    mediumButtonColor = BLUE
+    pygame.draw.rect(screen, mediumButtonColor, mediumButtonRect)
+    medium = menuFont.render("Medium", 1, WHITE)
+    screen.blit(medium,
+                (mediumButtonRect.centerx - medium.get_width() / 2, mediumButtonRect.centery - medium.get_height() / 2))
+
+    # Create Hard button
+    hardButtonRect = pygame.Rect((Width - buttonWidth) / 2, 400, buttonWidth, buttonHeight)
+    hardButtonColor = BLUE
+    pygame.draw.rect(screen, hardButtonColor, hardButtonRect)
+    hard = menuFont.render("Hard", 1, WHITE)
+    screen.blit(hard, (hardButtonRect.centerx - hard.get_width() / 2, hardButtonRect.centery - hard.get_height() / 2))
+
+    pygame.display.update()
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                if easyButtonRect.collidepoint(pos):
+                    choice = "Easy"
+                    d = level_depths[choice]
+                    return
+                elif mediumButtonRect.collidepoint(pos):
+                    choice = "Medium"
+                    d = level_depths[choice]
+                    return
+                elif hardButtonRect.collidepoint(pos):
+                    choice = "Hard"
+                    d = level_depths[choice]
+                    return
+            elif event.type == pygame.MOUSEMOTION:
+                # Check if mouse is hovering over the buttons
+                if easyButtonRect.collidepoint(event.pos):
+                    easyButtonColor = LIGHT_BLUE
+                else:
+                    easyButtonColor = BLUE
+                if mediumButtonRect.collidepoint(event.pos):
+                    mediumButtonColor = LIGHT_BLUE
+                else:
+                    mediumButtonColor = BLUE
+                if hardButtonRect.collidepoint(event.pos):
+                    hardButtonColor = LIGHT_BLUE
+                else:
+                    hardButtonColor = BLUE
+
+        # Redraw buttons with updated colors
+        pygame.draw.rect(screen, easyButtonColor, easyButtonRect)
+        screen.blit(easy, (easyButtonRect.centerx - easy.get_width() / 2, easyButtonRect.centery - easy.get_height() / 2))
+        pygame.draw.rect(screen, mediumButtonColor, mediumButtonRect)
+        screen.blit(medium,
+                    (mediumButtonRect.centerx - medium.get_width() / 2, mediumButtonRect.centery - medium.get_height() / 2))
+        pygame.draw.rect(screen, hardButtonColor, hardButtonRect)
+        screen.blit(hard, (hardButtonRect.centerx - hard.get_width() / 2, hardButtonRect.centery - hard.get_height() / 2))
+
+        pygame.display.update()
 
 board = createBoard()
 printBoard(board)
@@ -211,31 +290,46 @@ game_over = False
 
 pygame.init()
 
-BoardSize = 100
+NRows = 6
+NColumns = 7
 
-width = NColumns * BoardSize
-height = (NRows + 1) * BoardSize
+# Define the size of the board and margins
+BoardSize = 95
+LeftMargin = 10
+RightMargin = 10
+TopMargin = 10
+BottomMargin = 10
 
-size = (width, height)
+# Calculate the adjusted size of the screen
+Width = NColumns * BoardSize + LeftMargin + RightMargin
+Height = (NRows + 1) * BoardSize + TopMargin + BottomMargin
 
+# Calculate the adjusted size of the board
+AdjustedWidth = NColumns * BoardSize
+AdjustedHeight = NRows * BoardSize
+
+# Calculate the adjusted radius
 Radius = int(BoardSize / 2 - 5)
 
-screen = pygame.display.set_mode(size)
+# Create the screen with the adjusted size
+screen = pygame.display.set_mode((Width, Height))
+screen.fill(WHITE)
+displayMenu()
+screen.fill(WHITE)
 drawBoard(board)
 pygame.display.update()
 
 turn = random.randint(Computer, Agent)
 
-Font = pygame.font.SysFont("Times New Roman", 60)
+Font = pygame.font.SysFont("Open Sans", 90)
 
-# start the game
 while not game_over:
+
     # computer turn
     if turn == Computer:
         # col = random.randint(0, NColumns - 1)
-        Score, col = alpha_beta(board, 4, -math.inf, math.inf, False)
-
-        if isValidLocation(board, col):
+        Score, col = alpha_beta(board, d-1, -math.inf, math.inf, False)
+        if isValidLocation(board, col).any():
             pygame.time.wait(420)
             row = getChildren(board, col)
             dropPiece(board, row, col, CPiece)
@@ -254,8 +348,8 @@ while not game_over:
 
     # Agent turn
     if turn == Agent and not game_over:
-        Score, col = alpha_beta(board, 5, -math.inf, math.inf, True)
-        if isValidLocation(board, col):
+        Score, col = alpha_beta(board, d, -math.inf, math.inf, True)
+        if isValidLocation(board, col).any():
             pygame.time.wait(300)
             row = getChildren(board, col)
             dropPiece(board, row, col, APiece)
@@ -271,11 +365,15 @@ while not game_over:
 
             turn += 1
             turn = turn % 2
-    # The two players tied
+
+    # if the two players tied
     if len(getValidLocations(board)) == 0:
+        label = Font.render("The two players tied", 1, BLUE)
         game_over = True
         print("The two players tied")
-        label = Font.render("The two players tied", 1, BLUE)
         screen.blit(label, (40, 10))
+        printBoard(board)
+        drawBoard(board)
+
     if game_over:
         pygame.time.wait(3000)
