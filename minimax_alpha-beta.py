@@ -15,7 +15,7 @@ RED = (213, 46, 48)
 YELLOW = (252, 238, 33)
 BLACK = (0,0,0)
 LIGHT_BLUE = (0, 0, 179)
-W = (119, 117, 117, 0.584)
+
 NRows = 6
 NColumns = 7
 Limit = NColumns // 2
@@ -37,54 +37,6 @@ alphabeta_times = []
 
 level_depths = {"Easy": 2, "Medium": 4, "Hard": 6}
 algorithm = {"Minimax": 1, "Alpha_beta": 2}
-
-# Define the data
-# data = {
-#     'Minimax': {
-#         'Easy': [1.5, 2.8, 3.0],
-#         'Medium': [3.2, 4.5, 5.0],
-#         'Hard': [5.1, 5.5, 6.0],
-#     },
-#     'Alpha_beta': {
-#         'Easy': [1.5, 2.8, 3.0],
-#         'Medium': [3.2, 4.5, 5.0],
-#         'Hard': [5.1, 5.5, 6.0],
-#     }
-# }
-#
-# # Calculate the average time per move for each algorithm and level
-# avg_times = {}
-# for a in algorithm:
-#     avg_times[a] = []
-#     for level in level_depths:
-#         avg_time = np.mean(data[a][level])
-#         avg_times[a].append(avg_time)
-#
-# # Plot the data
-# fig, ax = plt.subplots()
-# x = np.arange(len(level_depths))  # the label locations
-# width = 0.35  #the width of the bars
-# rects1 = ax.bar(x - width/2, avg_times['Minimax'], width, label='Minimax')
-# rects2 = ax.bar(x + width/2, avg_times['Alpha_beta'], width, label='Alpha_beta')
-#
-# # Add some text for labels, title and custom x-axis tick labels, etc.
-# ax.set_ylabel('Average Time per Move (seconds)')
-# ax.set_title('Performance of Connect Four Algorithm at Different Levels')
-# ax.set_xticks(x)
-# ax.set_xticklabels(level_depths)
-# ax.legend()
-#
-# # Add labels for each bar
-# def autolabel(rects):
-#     """Attach a text label above each bar in rects, displaying its height."""
-#     for rect in rects:
-#         height = rect.get_height()
-#         ax.annotate('{}'.format(round(height, 2)),
-#                     xy=(rect.get_x() + rect.get_width() / 2, height),
-#                     xytext=(0, 3),  # 3 points vertical offset
-#                     textcoords="offset points",
-#                     ha='center', va='bottom')
-
 
 
 def createBoard():
